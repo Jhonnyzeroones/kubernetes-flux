@@ -1,0 +1,160 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack 
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: kube-prometheus-stack
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: observability
+      version: "48.6.0"
+      interval: 12h
+  values:
+    grafana:
+      grafana.ini:
+        analytics:
+          check_for_updates: false # no checks to grafana.com for updates
+        security:
+          cookie_secure: true
+          strict_transport_security: true 
+      admin:
+        existingSecret: monitoring-auth
+        passwordKey: password
+        userKey: user
+      ingress:
+        enabled: true
+        ingressClassName: nginx
+        annotations: 
+          cert-manager.io/cluster-issuer: letsencrypt-production-issuer
+        hosts:
+          - grafana.${domain}
+        tls: 
+          - hosts:
+            - grafana.${domain}
+            secretName: grafana-tls
+          
+      datasources:
+        datasources.yaml:
+          apiVersion: 1
+          datasources:
+          - name: Loki
+            type: loki
+            url: http://observability-loki:3100
+
+
+      # Provision grafana-dashboards-kubernetes
+      dashboardProviders:
+        dashboardproviders.yaml:
+          apiVersion: 1
+          providers:
+          - name: 'grafana-dashboards-kubernetes'
+            orgId: 1
+            folder: 'Kubernetes'
+            type: file
+            disableDeletion: true
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/grafana-dashboards-kubernetes
+          - name: 'app-logs'
+            orgId: 1
+            folder: 'App'
+            type: file
+            disableDeletion: true
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/test-cluster
+      dashboards:
+        grafana-dashboards-kubernetes:
+          k8s-system-api-server:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-api-server.json
+            token: ''
+          k8s-system-coredns:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-coredns.json
+            token: ''
+          k8s-views-global:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-global.json
+            token: ''
+          k8s-views-namespaces:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-namespaces.json
+            token: ''
+          k8s-views-nodes:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-nodes.json
+            token: ''
+          k8s-views-pods:
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json
+            token: ''
+          k8s-addons-trivy-operator: 
+            url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-addons-trivy-operator.json
+            token: ''
+
+      sidecar:
+        dashboards:
+          enabled: true
+          label: grafana_dashboards
+          watchMethod: WATCH
+          resource: both
+          # If specified, the sidecar will look for annotation with this name to create folder and put graph here.
+          # You can use this parameter together with `provider.foldersFromFilesStructure`to annotate configmaps and create folder structure.
+          folderAnnotation: folder_name
+          script: null
+          skipReload: false
+          provider:
+            name: test
+            orgid: 1
+            folder: 'Test'
+            type: file
+            disableDelete: false
+            allowUiUpdates: false
+            foldersFromFilesStructure: true
+
+
+    kubelet:
+      serviceMonitor:
+        cAdvisorRelabelings:
+          - action: replace
+            replacement: ${cluster_name}
+            targetLabel: cluster
+          - targetLabel: metrics_path
+            sourceLabels:
+              - "__metrics_path__"
+          - targetLabel: "instance"
+            sourceLabels:
+              - "node"
+
+    defaultRules:
+      additionalRuleLabels:
+        cluster: ${cluster_name}
+
+    "kube-state-metrics":
+      prometheus:
+        monitor:
+          relabelings:
+            - action: replace
+              replacement: ${cluster_name}
+              targetLabel: cluster
+            - targetLabel: "instance"
+              sourceLabels:
+                - "__meta_kubernetes_pod_node_name"
+
+    "prometheus-node-exporter":
+      prometheus:
+        monitor:
+          relabelings:
+            - action: replace
+              replacement: ${cluster_name}
+              targetLabel: cluster
+            - targetLabel: "instance"
+              sourceLabels:
+                - "__meta_kubernetes_pod_node_name"
+
+    prometheus:
+      monitor:
+        relabelings:
+          - action: replace
+            replacement: ${cluster_name}
+            targetLabel: cluster

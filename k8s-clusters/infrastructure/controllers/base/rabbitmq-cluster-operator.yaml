@@ -1,0 +1,34 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: rabbitmq-cluster-operator
+  labels:
+    toolkit.fluxcd.io/tenant: sre-team
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: rabbitmq-cluster-operator
+  namespace: rabbitmq-cluster-operator
+spec:
+  type: oci
+  interval: 60m0s
+  url: oci://registry-1.docker.io/bitnamicharts
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: rabbitmq-cluster-operator
+  namespace: rabbitmq-cluster-operator
+spec:
+  interval: 60m
+  chart:
+    spec:
+      chart: rabbitmq-cluster-operator
+      version: "3.9.0"
+      sourceRef:
+        kind: HelmRepository
+        name: rabbitmq-cluster-operator
+      interval: 12h
+  # https://github.com/bitnami/charts/blob/main/bitnami/rabbitmq-cluster-operator/values.yaml

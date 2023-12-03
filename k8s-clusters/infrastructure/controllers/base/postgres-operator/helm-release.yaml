@@ -1,0 +1,42 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: cnpg-operator
+spec:
+  releaseName: cnpg-operator
+  chart:
+    spec:
+      chart: "cloudnative-pg"
+      sourceRef:
+        kind: HelmRepository
+        name: cnpg-operator
+      version: "0.18.2"
+  interval: 1h0m0s
+  install:
+    remediation:
+      retries: 3
+  # default helm values see https://github.com/cloudnative-pg/charts/blob/main/charts/cloudnative-pg/values.yaml
+  values:
+    config:
+    # -- Specifies whether the config should be created
+      create: true
+    # -- Specifies whether it should be stored in a secret, instead of a configmap
+      secret: false
+      data:
+        ENABLE_INSTANCE_MANAGER_INPLACE_UPDATES: "false"
+      name: cnpg-controller-manager-config
+    podLabels:
+      tier: data
+
+    resources:
+      limits:
+        cpu: 100m
+        memory: 1G
+      requests:
+        cpu: 100m
+        memory: 100M
+    test:
+      image:
+        repository: busybox
+        pullPolicy: IfNotPresent
+        tag: "1.36.1"

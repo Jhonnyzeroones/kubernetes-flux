@@ -1,0 +1,42 @@
+apiVersion: v1
+data:
+    password: ENC[AES256_GCM,data:AWlW/vnMXTAMcYDb98HzbxX2Y54=,iv:xg4ceJywbx7TeCMvDez2LAKdE7J6GQE1apqaicOznfI=,tag:rm/2ow01cC1wbNtStH88JA==,type:str]
+    user: ENC[AES256_GCM,data:ZLTR3dIZBJA=,iv:RXysxf0KAhahSZPhfRFTfpY4LmNM50/lY434GhfXECM=,tag:V/0Fs5N0jAGcNpF+6vi1YQ==,type:str]
+kind: Secret
+metadata:
+    creationTimestamp: null
+    name: monitoring-auth
+    namespace: observability
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age: []
+    lastmodified: "2023-11-02T14:29:55Z"
+    mac: ENC[AES256_GCM,data:WvK49Xf2jC3V5MTQ60tjIyZRixWoUlzN2FopZWhtZOHJOR0/WpcZwKUZb3JJT1ekztX44QnalTc7wnhdOb0SnepNzu3M0rROgMS6BlTbi4lFvS+Xhi1KV+x2cy8RwqMYtvNEHWpzSUSQbPeXdI7ZCYxvAECR7DGgT+ny7Plp1pQ=,iv:jdMp1wxUVi2Py2QISYxOlMpsoAvt5+zxHr5WXIvEkAI=,tag:2WASOt6tdXMEWbHrycFPEQ==,type:str]
+    pgp:
+        - created_at: "2023-11-02T14:29:55Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA9EYP3MF/Qe6AQ//dyZxGW2FRVMtaEP7CGUKFFijiw6Gbnzy2LVdX6uO/J0Y
+            uWsBXkPFOiKD9kG356i0dp5szMYwzDJSSA/vpypUzeARd+edcRSi1y7xg2DOamTo
+            yVXdoQYlJaOA22CJZ2RduGFcPPwJqfZbv554D0MKExTJu2Fk3afLqmN7kpu3C6Rw
+            nFsYYFQkAUihJtBuF7EPEiSJzb0UXa7SjVXbwdoIkHo2iYFtx8+qaAJrzW3+kLJX
+            bK4B9QJw9BDNLN1RLOCaW6yc54XvsJM+GK/vm78clKEf+nDNFy5WOa4u35bFAzRI
+            jBgXARsaYozGOYzYELdB9rBTUyu/u40SqlWFRQ5hSoZMYcel+M9nq3SVEsFtaAEQ
+            FgBZESRQEWC+63MczWE/qrHSsVZ0q7MxH/3hCksCB/+f1sSBCftX9aK4wdWkqRel
+            Odam/ktolMjEsF3xDA78z2t8ZdfBCUt5tFgctaQM1J3EDxZzkaRnuko4Jk1bohmG
+            e23gj/0ugCKF+7dCjVYTFgiYcPxfb7JjVQjbfon+Mp3PGX8xd1dH65xw6igndidm
+            EE5O5rzoPGFJC0h3Rml0hxznsCcovvn4/TRnNCJ6QoE12YY/0CyBx2KxI/N1ehE4
+            44+kRNbaXO3N1hiYysSUDCfBfXA4me/sJOnqSlnZT5RP3eeXz/XygeO8x/nlaJrU
+            aAEJAhDilBEYmQg45l5h4+Zb6okzi738V1CyU99s3YaGazZ/QGIEwVZMIZ6w3YMp
+            jgBhMZURgrzb35uR/CI+xnkEWHUNTEFazAfm2iC1eQYWLkbvah3bhiHnfgfRy2+w
+            pWaKQSj9RC5Y
+            =O/7s
+            -----END PGP MESSAGE-----
+          fp: 0C00097D5CA1F452878E506401B581C62293A2CE
+    encrypted_regex: ^(data|stringData)$
+    version: 3.8.0-rc.1
+---
