@@ -15,3 +15,6 @@ spec:
   prune: true
   wait: true
   timeout: 5m0s
+  postBuild:
+    substitute:
+      domain: "test-dataplatform.online"
